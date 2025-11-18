@@ -40,12 +40,12 @@ def convert_to_ollama_format():
                 
                 f_out.write(json.dumps(ollama_entry, ensure_ascii=False) + '\n')
     
-    print(f"✅ Dataset convertido: {OUTPUT_FILE}")
+    print(f"Dataset convertido: {OUTPUT_FILE}")
     
     # Mostrar un ejemplo
     with open(OUTPUT_FILE, 'r', encoding='utf-8') as f:
         first_line = f.readline()
-        print("\n📋 Ejemplo de entrada convertida:")
+        print("\nEjemplo de entrada convertida:")
         print(json.dumps(json.loads(first_line), indent=2, ensure_ascii=False))
 
 if __name__ == "__main__":

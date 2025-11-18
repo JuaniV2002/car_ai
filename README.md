@@ -1,33 +1,33 @@
-# Proyecto Final - IA: Identificador de Marcas de Autos 🚗
+# Proyecto Final - Inteligencia Artificial
 
-Sistema de IA que **aprende a identificar marcas** de automóviles a partir de códigos alfanuméricos inventados, demostrando **aprendizaje real** mediante few-shot learning con LLMs.
+Identificador de marcas de automóviles usando códigos alfanuméricos inventados. El objetivo es demostrar aprendizaje real en un LLM mediante few-shot learning.
 
-## 🎯 Objetivo del Proyecto
+## Objetivo
 
-Demostrar que un LLM puede **aprender información completamente nueva** (códigos que nunca vio antes) usando técnicas de:
-- ✅ Few-shot learning (ejemplos en el prompt)
-- ✅ System prompts configurados
-- ✅ Prompt engineering
+Demostrar que un LLM puede aprender información completamente nueva (códigos que nunca vio antes) usando:
+- Few-shot learning (ejemplos en el prompt)
+- System prompts configurados
+- Prompt engineering
 
-## 📊 Prueba de Aprendizaje Real
+## Prueba de Aprendizaje
 
-### ❌ Sin entrenamiento (modelo base):
+### Sin entrenamiento (modelo base):
 ```bash
 echo "Código: TOY-2847A" | ollama run llama3.2
 # Respuesta: "No puedo identificar el código TOY-2847A..."
-# Precisión: 0% ❌
+# Precisión: 0%
 ```
 
-### ✅ Con few-shot learning:
+### Con few-shot learning:
 ```bash
 python3 training/few_shot_learning.py
-# Precisión: 67% en códigos del dataset ✅
-# Precisión: 50% en códigos nuevos (generalización) 🎯
+# Precisión: 67% en códigos del dataset
+# Precisión: 50% en códigos nuevos (generalización)
 ```
 
-**Esto demuestra APRENDIZAJE REAL** - el modelo aprende códigos que nunca existieron en su entrenamiento original.
+El modelo aprende códigos que nunca existieron en su entrenamiento original.
 
-## 🏗️ Estructura del Proyecto
+## Estructura del Proyecto
 
 ```
 car_ai/
@@ -36,15 +36,15 @@ car_ai/
 ├── training/
 │   ├── training_data_codes.jsonl   # Dataset convertido para Ollama
 │   ├── convert_dataset.py          # Convertir formato
-│   ├── few_shot_learning.py        # 🎓 APRENDIZAJE REAL con ejemplos
+│   ├── few_shot_learning.py        # Experimento principal con few-shot learning
 │   ├── compare_models.py           # Comparación antes/después
 │   ├── verify_base_model.py        # Verificar que códigos son nuevos
-│   └── test_model.py               # Tests del modelo
+│   └── visualize_results.py        # Visualización de resultados
 ├── Modelfile_codes                 # Config para códigos inventados
 └── README.md
 ```
 
-## 🚀 Uso Rápido
+## Uso
 
 ### Experimento 1: Verificar que el modelo NO conoce los códigos
 ```bash
@@ -56,48 +56,37 @@ python3 training/verify_base_model.py
 python3 training/compare_models.py
 ```
 
-### Experimento 3: 🎯 Few-Shot Learning (APRENDIZAJE REAL)
+### Experimento 3: Few-Shot Learning (experimento principal)
 ```bash
 python3 training/few_shot_learning.py
 ```
 
-Este último experimento demuestra que:
-- ✅ El modelo aprende códigos completamente nuevos
-- ✅ Generaliza a códigos no vistos (detecta patrones)
-- ✅ Mejora de 0% → 67% de precisión
+Este experimento demuestra que:
+- El modelo aprende códigos completamente nuevos
+- Generaliza a códigos no vistos (detecta patrones)
+- Mejora de 0% → 67% de precisión
 
-## 🎯 Ejemplos de Uso
+## Ejemplos
 
-### Sistema de códigos inventados (aprendizaje real):
+### Verificación del modelo base:
 ```bash
-# Verificar que el modelo base NO los conoce
 echo "Código: TOY-2847A" | ollama run llama3.2
-# ❌ "No puedo identificar este código"
-
-# Usar few-shot learning para enseñarle
-python3 training/few_shot_learning.py
-# ✅ Aprende que TOY-2847A → Toyota
+# "No puedo identificar este código"
 ```
 
-### Sistema tradicional (el modelo ya conoce las marcas):
+### Con few-shot learning:
 ```bash
-ollama run car-brands
-# Auto: Toyota Corolla → Toyota ✅
-# (Funciona pero no es aprendizaje nuevo)
+python3 training/few_shot_learning.py
+# El modelo aprende que TOY-2847A → Toyota
 ```
 
-## 📊 Dataset
+## Dataset
 
-### Dataset 1: Marcas Reales (`dataset.jsonl`)
-- **Total:** 100 ejemplos
-- **Problema:** El modelo YA conoce estas marcas
-- **Uso:** Baseline, no demuestra aprendizaje nuevo
-
-### Dataset 2: Códigos Inventados (`dataset_codes.jsonl`) ⭐
-- **Total:** 100 ejemplos
-- **Códigos:** TOY-2847A, FRD-4821X, VWG-3947K, etc.
-- **Ventaja:** El modelo NUNCA vio estos códigos
-- **Uso:** Demuestra aprendizaje real
+### Códigos Inventados (`dataset_codes.jsonl`)
+- Total: 100 ejemplos
+- Códigos: TOY-2847A, FRD-4821X, VWG-3947K, etc.
+- El modelo nunca vio estos códigos en su entrenamiento
+- Permite demostrar aprendizaje real
 
 #### Formato de códigos:
 ```
@@ -113,55 +102,53 @@ BMW-XXXX → BMW
 MBZ-XXXX → Mercedes-Benz
 ```
 
-## ⚙️ Tecnologías y Técnicas
+## Tecnologías
 
-- **LLM Base:** llama3.2 (3B)
-- **Framework:** Ollama
-- **Técnicas de ML:**
-  - ✅ **Few-shot learning** (principal)
-  - ✅ **Prompt engineering**
-  - ✅ **System prompts**
-  - ✅ **In-context learning**
-- **Lenguaje:** Python 3
+- LLM: llama3.2 (3B parámetros)
+- Framework: Ollama
+- Técnicas:
+  - Few-shot learning
+  - Prompt engineering
+  - System prompts
+  - In-context learning
+- Lenguaje: Python 3
 
-## 📈 Resultados
+## Resultados
 
 | Método | Precisión en Dataset | Precisión en Nuevos | Aprendizaje Real |
 |--------|---------------------|---------------------|------------------|
-| Modelo base | 0% | 0% | ❌ No |
-| System prompt | 60% | 10% | ⚠️ Parcial |
-| **Few-shot learning** | **67%** | **50%** | ✅ **Sí** |
+| Modelo base | 0% | 0% | No |
+| System prompt | 60% | 10% | Parcial |
+| Few-shot learning | 67% | 50% | Sí |
 
-**Conclusión:** Few-shot learning demuestra que el modelo puede aprender información completamente nueva con solo ver ejemplos.
+Few-shot learning demuestra que el modelo puede aprender información completamente nueva con solo ver ejemplos.
 
-## 🔧 Requisitos
+## Requisitos
 
 - Ollama instalado
 - Python 3.x
 - Modelo llama3.2 descargado (`ollama pull llama3.2`)
 
-## 📝 Notas Técnicas
+## Notas Técnicas
 
-- **Temperature:** 0.3 (respuestas más deterministas)
-- **Top_p:** 0.9
-- **Max tokens:** 20 (respuestas cortas)
+- Temperature: 0.3 (respuestas más deterministas)
+- Top_p: 0.9
+- Max tokens: 20 (respuestas cortas)
 - El modelo está optimizado para respuestas concisas de una sola palabra (la marca)
 
-## 🎓 Proyecto Final
+## Metodología
 
-Este proyecto fue desarrollado para demostrar **aprendizaje real** en Large Language Models.
+### Problema:
+¿Cómo demostrar que el modelo realmente aprende algo nuevo y no solo usa conocimiento previo?
 
-### Desafío planteado:
-> *"¿Cómo demuestro que el modelo realmente APRENDE algo nuevo y no solo usa conocimiento previo?"*
+### Solución:
+1. Crear códigos alfanuméricos que no existen en el mundo real
+2. Verificar que el modelo base no los conoce (0% precisión)
+3. Aplicar few-shot learning con 20 ejemplos
+4. Demostrar mejora: 0% → 67%
+5. El modelo generaliza a códigos nuevos (50%)
 
-### Solución implementada:
-1. ✅ Crear códigos alfanuméricos que no existen en el mundo real
-2. ✅ Verificar que el modelo base NO los conoce (0% precisión)
-3. ✅ Aplicar few-shot learning con 20 ejemplos
-4. ✅ Demostrar mejora: 0% → 67% (aprendizaje comprobado)
-5. ✅ Bonus: El modelo generaliza a códigos nuevos (50%)
-
-### Valor académico:
+### Contribución:
 - Demuestra comprensión de in-context learning
 - Aplica técnicas de prompt engineering
 - Mide el aprendizaje de forma cuantitativa

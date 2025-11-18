@@ -27,20 +27,20 @@ def test_base_model(code):
     except:
         return "Error"
 
-print("🔍 Verificando que el modelo BASE (llama3.2) NO conoce los códigos inventados...\n")
+print("Verificando que el modelo BASE (llama3.2) NO conoce los códigos inventados...\n")
 print("=" * 70)
 
 for code, expected in CODES:
-    print(f"\n📋 Código: {code} (debería ser: {expected})")
+    print(f"\nCódigo: {code} (debería ser: {expected})")
     response = test_base_model(code)
     print(f"   Respuesta del modelo: {response[:100]}...")
     
     # Verificar que NO menciona la marca correcta
     if expected.lower() in response.lower():
-        print(f"   ⚠️  El modelo parece conocer este código")
+        print(f"   El modelo parece conocer este código")
     else:
-        print(f"   ✅ Confirmado: El modelo NO conoce este código")
+        print(f"   Confirmado: El modelo NO conoce este código")
 
 print("\n" + "=" * 70)
-print("\n💡 Los códigos son totalmente nuevos para el modelo.")
-print("   Esto demuestra que el fine-tuning será aprendizaje REAL.")
+print("\nLos códigos son totalmente nuevos para el modelo.")
+print("Esto permite demostrar aprendizaje real.")

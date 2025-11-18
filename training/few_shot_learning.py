@@ -71,9 +71,9 @@ test_cases = [
 ]
 
 print("=" * 80)
-print("🎓 FEW-SHOT LEARNING - Aprendizaje Real con Ejemplos")
+print("FEW-SHOT LEARNING - Aprendizaje con Ejemplos")
 print("=" * 80)
-print(f"\n📚 Usando {20} ejemplos en el prompt para enseñar al modelo\n")
+print(f"\nUsando {20} ejemplos en el prompt para enseñar al modelo\n")
 
 correct_seen = 0
 total_seen = 0
@@ -81,20 +81,20 @@ correct_unseen = 0
 total_unseen = 0
 
 for code, expected, is_in_dataset in test_cases:
-    status = "📘 EN DATASET" if is_in_dataset else "🆕 NUEVO"
-    print(f"\n{status} - Código: {code} → Esperado: {expected}")
+    status = "[DATASET]" if is_in_dataset else "[NUEVO]"
+    print(f"\n{status} Código: {code} → Esperado: {expected}")
     
     response, is_correct = test_with_few_shot(code, expected)
     print(f"   Respuesta: {response}")
     
     if is_correct:
-        print(f"   ✅ CORRECTO")
+        print(f"   CORRECTO")
         if is_in_dataset:
             correct_seen += 1
         else:
             correct_unseen += 1
     else:
-        print(f"   ❌ INCORRECTO")
+        print(f"   INCORRECTO")
     
     if is_in_dataset:
         total_seen += 1
@@ -102,30 +102,30 @@ for code, expected, is_in_dataset in test_cases:
         total_unseen += 1
 
 print("\n" + "=" * 80)
-print("📊 RESULTADOS DEL FEW-SHOT LEARNING:")
+print("RESULTADOS DEL FEW-SHOT LEARNING:")
 print("=" * 80)
-print(f"\n📘 Códigos del dataset (vistos en ejemplos):")
+print(f"\nCódigos del dataset (vistos en ejemplos):")
 print(f"   {correct_seen}/{total_seen} correctos ({100*correct_seen/total_seen:.0f}%)")
 
-print(f"\n🆕 Códigos nuevos (capacidad de generalización):")
+print(f"\nCódigos nuevos (capacidad de generalización):")
 print(f"   {correct_unseen}/{total_unseen} correctos ({100*correct_unseen/total_unseen:.0f}%)")
 
-print(f"\n📈 TOTAL: {correct_seen + correct_unseen}/{total_seen + total_unseen} correctos " +
+print(f"\nTOTAL: {correct_seen + correct_unseen}/{total_seen + total_unseen} correctos " +
       f"({100*(correct_seen + correct_unseen)/(total_seen + total_unseen):.0f}%)")
 
 print("\n" + "=" * 80)
-print("\n💡 ANÁLISIS:")
+print("\nANÁLISIS:")
 if correct_seen == total_seen:
-    print("   ✅ El modelo aprende PERFECTAMENTE los ejemplos mostrados")
-    print("   🎯 Esto demuestra APRENDIZAJE REAL mediante few-shot learning")
+    print("   El modelo aprende perfectamente los ejemplos mostrados")
+    print("   Esto demuestra aprendizaje real mediante few-shot learning")
 elif correct_seen >= total_seen * 0.8:
-    print("   ✅ El modelo aprende muy bien de los ejemplos")
-    print("   🎯 Few-shot learning funciona!")
+    print("   El modelo aprende bien de los ejemplos")
+    print("   Few-shot learning funciona correctamente")
 else:
-    print("   ⚠️  El modelo tiene dificultad para aprender de los ejemplos")
+    print("   El modelo tiene dificultad para aprender de los ejemplos")
 
 if correct_unseen > 0:
-    print(f"   🌟 BONUS: Generalizó a {correct_unseen} código(s) nuevo(s)!")
-    print("   📚 El modelo detectó el patrón en los prefijos")
+    print(f"   BONUS: Generalizó a {correct_unseen} código(s) nuevo(s)")
+    print("   El modelo detectó el patrón en los prefijos")
 
 print("\n" + "=" * 80)
