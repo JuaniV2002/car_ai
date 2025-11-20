@@ -1,155 +1,86 @@
-# Proyecto Final - Inteligencia Artificial
+# Extractor de Datos de Siniestros con IA
 
-Identificador de marcas de automóviles usando códigos alfanuméricos inventados. El objetivo es demostrar aprendizaje real en un LLM mediante few-shot learning.
+Este proyecto implementa un sistema inteligente para extraer información estructurada a partir de descripciones de accidentes de tránsito no estructuradas (texto libre). Combina técnicas de **Fuzzing** para la generación de datos sintéticos y **LLMs (Modelos de Lenguaje Grande)** para el procesamiento de información.
 
-## Objetivo
+## 🎯 Objetivo
 
-Demostrar que un LLM puede aprender información completamente nueva (códigos que nunca vio antes) usando:
-- Few-shot learning (ejemplos en el prompt)
-- System prompts configurados
-- Prompt engineering
+Demostrar la capacidad de los LLMs para "limpiar" y estructurar datos ruidosos del mundo real, una tarea que sería imposible con expresiones regulares (Regex) o SQL tradicional.
 
-## Prueba de Aprendizaje
+El sistema toma descripciones informales como:
+> *"Tuve un accidente en av libertador ayer un ford fiesta me rayó el costado a mi honda civic necesito grúa"*
 
-### Sin entrenamiento (modelo base):
-```bash
-echo "Código: TOY-2847A" | ollama run llama3.2
-# Respuesta: "No puedo identificar el código TOY-2847A..."
-# Precisión: 0%
+Y las convierte en JSON estructurado:
+```json
+{
+  "fecha": "2024-03-18",
+  "ubicacion": "Av. Libertador",
+  "vehiculo_asegurado": "Honda Civic",
+  "vehiculo_tercero": "Ford Fiesta",
+  "responsabilidad_aparente": "tercero"
+}
 ```
 
-### Con few-shot learning:
-```bash
-python3 training/few_shot_learning.py
-# Precisión: 67% en códigos del dataset
-# Precisión: 50% en códigos nuevos (generalización)
-```
+## 🏗️ Arquitectura del Proyecto
 
-El modelo aprende códigos que nunca existieron en su entrenamiento original.
+El proyecto consta de tres módulos principales:
 
-## Estructura del Proyecto
+1.  **Generación de Datos (Fuzzing):**
+    *   Script: `fuzzing/generate_claims.py`
+    *   Genera reclamos sintéticos inyectando "ruido" intencional: errores de ortografía, falta de puntuación, jerga ("me chocó de atrás"), y formatos de fecha variados.
+    *   Simula la variabilidad de datos reales ingresados por usuarios.
 
-```
-car_ai/
-├── dataset/
-│   ├── dataset_codes.jsonl         # Dataset con códigos INVENTADOS
-├── training/
-│   ├── training_data_codes.jsonl   # Dataset convertido para Ollama
-│   ├── convert_dataset.py          # Convertir formato
-│   ├── few_shot_learning.py        # Experimento principal con few-shot learning
-│   ├── compare_models.py           # Comparación antes/después
-│   ├── verify_base_model.py        # Verificar que códigos son nuevos
-│   └── visualize_results.py        # Visualización de resultados
-├── Modelfile_codes                 # Config para códigos inventados
-└── README.md
-```
+2.  **Procesamiento con IA:**
+    *   Script: `src/process_claims.py`
+    *   Utiliza **Ollama** con el modelo **Llama 3.2**.
+    *   Implementa un *System Prompt* robusto diseñado para inferir roles (quién chocó a quién) y normalizar entidades.
 
-## Uso
+3.  **Validación y Métricas:**
+    *   Script: `src/validate_results.py`
+    *   Compara la salida del LLM contra el "Ground Truth" (la verdad absoluta generada por el fuzzer).
+    *   Calcula precisión por campo y detecta errores lógicos (como intercambiar vehículos).
 
-### Experimento 1: Verificar que el modelo NO conoce los códigos
-```bash
-python3 training/verify_base_model.py
-```
+## 🚀 Cómo Ejecutar
 
-### Experimento 2: Comparar modelo base vs configurado
-```bash
-python3 training/compare_models.py
-```
+### Prerrequisitos
+- Python 3
+- Ollama instalado y ejecutándose (`ollama serve`)
+- Modelo Llama 3.2 (`ollama pull llama3.2`)
 
-### Experimento 3: Few-Shot Learning (experimento principal)
-```bash
-python3 training/few_shot_learning.py
-```
+### Pasos
 
-Este experimento demuestra que:
-- El modelo aprende códigos completamente nuevos
-- Generaliza a códigos no vistos (detecta patrones)
-- Mejora de 0% → 67% de precisión
+1.  **Generar Datos de Prueba:**
+    ```bash
+    python3 fuzzing/generate_claims.py
+    ```
+    *Esto creará `data/synthetic_claims.jsonl` con 50 casos de prueba.*
 
-## Ejemplos
+2.  **Ejecutar el Extractor:**
+    ```bash
+    python3 src/process_claims.py
+    ```
+    *Procesará los reclamos y guardará los resultados en `data/processed_claims.jsonl`.*
 
-### Verificación del modelo base:
-```bash
-echo "Código: TOY-2847A" | ollama run llama3.2
-# "No puedo identificar este código"
-```
+3.  **Ver Resultados y Métricas:**
+    ```bash
+    python3 src/validate_results.py
+    ```
+    *Mostrará una tabla comparativa y el porcentaje de precisión.*
 
-### Con few-shot learning:
-```bash
-python3 training/few_shot_learning.py
-# El modelo aprende que TOY-2847A → Toyota
-```
+## 📊 Resultados Obtenidos
 
-## Dataset
+En pruebas locales con Llama 3.2 (3B parámetros), el sistema logró:
+- **100%** de precisión en detección de Ubicación.
+- **98%** de precisión en identificación de Vehículos.
+- **98%** de precisión en asignación de Responsabilidad.
 
-### Códigos Inventados (`dataset_codes.jsonl`)
-- Total: 100 ejemplos
-- Códigos: TOY-2847A, FRD-4821X, VWG-3947K, etc.
-- El modelo nunca vio estos códigos en su entrenamiento
-- Permite demostrar aprendizaje real
+*Ver el reporte completo en `metrics_report.md`.*
 
-#### Formato de códigos:
-```
-TOY-XXXX → Toyota
-FRD-XXXX → Ford
-VWG-XXXX → Volkswagen
-CHV-XXXX → Chevrolet
-RNT-XXXX → Renault
-FIA-XXXX → Fiat
-PGT-XXXX → Peugeot
-HND-XXXX → Honda
-BMW-XXXX → BMW
-MBZ-XXXX → Mercedes-Benz
-```
+## 🛠️ Tecnologías Utilizadas
 
-## Tecnologías
+- **Python 3**: Lenguaje principal.
+- **Ollama**: Runtime local para LLMs.
+- **Llama 3.2**: Modelo de lenguaje optimizado para instrucciones.
+- **JSONL**: Formato de datos para procesamiento eficiente.
 
-- LLM: llama3.2 (3B parámetros)
-- Framework: Ollama
-- Técnicas:
-  - Few-shot learning
-  - Prompt engineering
-  - System prompts
-  - In-context learning
-- Lenguaje: Python 3
-
-## Resultados
-
-| Método | Precisión en Dataset | Precisión en Nuevos | Aprendizaje Real |
-|--------|---------------------|---------------------|------------------|
-| Modelo base | 0% | 0% | No |
-| System prompt | 60% | 10% | Parcial |
-| Few-shot learning | 67% | 50% | Sí |
-
-Few-shot learning demuestra que el modelo puede aprender información completamente nueva con solo ver ejemplos.
-
-## Requisitos
-
-- Ollama instalado
-- Python 3.x
-- Modelo llama3.2 descargado (`ollama pull llama3.2`)
-
-## Notas Técnicas
-
-- Temperature: 0.3 (respuestas más deterministas)
-- Top_p: 0.9
-- Max tokens: 20 (respuestas cortas)
-- El modelo está optimizado para respuestas concisas de una sola palabra (la marca)
-
-## Metodología
-
-### Problema:
-¿Cómo demostrar que el modelo realmente aprende algo nuevo y no solo usa conocimiento previo?
-
-### Solución:
-1. Crear códigos alfanuméricos que no existen en el mundo real
-2. Verificar que el modelo base no los conoce (0% precisión)
-3. Aplicar few-shot learning con 20 ejemplos
-4. Demostrar mejora: 0% → 67%
-5. El modelo generaliza a códigos nuevos (50%)
-
-### Contribución:
-- Demuestra comprensión de in-context learning
-- Aplica técnicas de prompt engineering
-- Mide el aprendizaje de forma cuantitativa
-- Documenta experimentos con metodología científica
+---
+*Proyecto desarrollado para el curso de Inteligencia Artificial.*
