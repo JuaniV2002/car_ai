@@ -83,4 +83,4 @@ En pruebas locales con Llama 3.2 (3B parámetros), el sistema logró:
 - **JSONL**: Formato de datos para procesamiento eficiente.
 
 ---
-*Proyecto desarrollado para el curso de Inteligencia Artificial.*
+*Proyecto desarrollado para la materia de Inteligencia Artificial.*
