@@ -9,35 +9,13 @@ import validate_results
 # Configuration
 INPUT_FILE = 'data/synthetic_claims.jsonl'
 OUTPUT_FILE = 'data/processed_claims.jsonl'
-MODEL_NAME = 'llama3.2'
+MODEL_NAME = 'claims-extractor'  # Custom model created from Modelfile
 API_URL = 'http://localhost:11434/api/chat'
-
-SYSTEM_PROMPT = """
-Eres un asistente experto en seguros y procesamiento de datos. Tu tarea es extraer información estructurada de descripciones de siniestros de autos que pueden contener errores ortográficos, jerga o texto informal.
-
-Debes extraer la siguiente información en formato JSON estricto:
-{
-    "fecha": "YYYY-MM-DD" o null,
-    "hora": "HH:MM" o null,
-    "ubicacion": "calle, ciudad o referencia geográfica",
-    "vehiculo_asegurado": "Marca y Modelo",
-    "vehiculo_tercero": "Marca y Modelo" o null,
-    "descripcion_breve": "Resumen del accidente",
-    "responsabilidad_aparente": "asegurado", "tercero" o "indeterminado"
-}
-
-Reglas:
-1. Si no encuentras un dato, usa null.
-2. Corrige errores ortográficos en los nombres de calles o marcas si es obvio.
-3. Infiere la responsabilidad basándote en la descripción (ej: "me chocaron de atrás" implica responsabilidad del tercero).
-4. Responde ÚNICAMENTE con el JSON, sin texto adicional.
-"""
 
 def extract_info(text):
     payload = {
         "model": MODEL_NAME,
         "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": text}
         ],
         "stream": False,
