@@ -32,22 +32,7 @@ Entrada: "un fiat rojo se me cruzo de la nada y le di en la puerta"
 
 ---
 
-## 2. Historia del NLP — Dónde encaja el proyecto
-
-Este proyecto usa tecnología de la **era 2017+** (Transformers):
-
-| Época | Técnica | Limitación para este problema |
-|-------|---------|-------------------------------|
-| 1950-1980 | Gramáticas formales | No maneja texto informal ni ambigüedad |
-| 1980-2010 | N-gramas, HMM | No captura contexto largo, no genera JSON |
-| 2010-2017 | RNN/LSTM | Mejor, pero lento y memoria limitada |
-| **2017+** | **Transformers (LLaMA 3.2)** | Captura contexto completo, genera estructurado |
-
-**LLaMA 3.2** es un modelo decoder-only basado en la arquitectura GPT, que usa los avances de "Attention is All You Need" (2017).
-
----
-
-## 3. Gramáticas Formales — Por qué no sirven acá
+## 2. Gramáticas Formales — Por qué no sirven acá
 
 **Limitación clave:** Las gramáticas son binarias (acepta/rechaza).
 
@@ -69,7 +54,7 @@ CALLE → "Av." + NOMBRE | "Calle" + NOMBRE
 
 ---
 
-## 4. Modelos de Lenguaje — El corazón del proyecto
+## 3. Modelos de Lenguaje — El corazón del proyecto
 
 **Concepto:** Un LM asigna probabilidad a secuencias y predice la siguiente palabra.
 
@@ -91,7 +76,7 @@ El modelo aprendió durante el preentrenamiento que después de "marca del terce
 
 ---
 
-## 5. N-Gramas — Por qué no alcanzan
+## 4. N-Gramas — Por qué no alcanzan
 
 ### Unigramas y Bigramas
 
@@ -120,7 +105,7 @@ Un bigrama solo ve pares:
 
 ---
 
-## 6. RNN/LSTM — Por qué tampoco alcanzan
+## 5. RNN/LSTM — Por qué tampoco alcanzan
 
 ### Problemas de RNN aplicados al proyecto
 
@@ -143,7 +128,7 @@ Una LSTM tendría problemas para recordar "toyota corolla gris" al momento de as
 
 ---
 
-## 7. Embeddings — Cómo el modelo entiende palabras
+## 6. Embeddings — Cómo el modelo entiende palabras
 
 ### One-hot vs Embeddings
 
@@ -193,7 +178,7 @@ Esto permite que entienda variaciones sin reglas explícitas.
 
 ---
 
-## 8. LLMs — LLaMA 3.2 en el proyecto
+## 7. LLMs — LLaMA 3.2 en el proyecto
 
 **LLaMA 3.2 (3B parámetros):**
 - Arquitectura: Transformer decoder-only
@@ -214,9 +199,9 @@ Este proyecto usa **prompt engineering** en lugar de fine-tuning de pesos, pero 
 
 ---
 
-## 9. Transformers — La arquitectura detrás de todo
+## 8. Transformers — La arquitectura detrás de todo
 
-### 9.1 Positional Embeddings
+### 8.1 Positional Embeddings
 
 **Por qué importan:**
 ```
@@ -225,7 +210,7 @@ Este proyecto usa **prompt engineering** en lugar de fine-tuning de pesos, pero 
 
 Sin posiciones, el modelo no sabría el orden. LLaMA usa **RoPE (Rotary Position Embeddings)** que codifica posiciones mediante rotaciones en el espacio de embeddings.
 
-### 9.2 Self-Attention — El mecanismo clave
+### 8.2 Self-Attention — El mecanismo clave
 
 **Query, Key, Value en el proyecto:**
 
@@ -245,19 +230,7 @@ Atención("chocó" → "en") = baja    (menos relevante)
 
 **Resultado:** El modelo conecta "fiat" con la acción de chocar, permitiendo inferir `vehiculo_tercero: "Fiat"`.
 
-### 9.3 Fórmula de Atención
-
-```
-Attention(Q, K, V) = softmax(QK^T / √dk) × V
-```
-
-**Aplicado al proyecto:**
-- `QK^T`: Calcula similitud entre cada par de palabras
-- `√dk`: Normaliza para estabilidad numérica
-- `softmax`: Convierte a probabilidades (qué palabras atender)
-- `× V`: Combina información de las palabras relevantes
-
-### 9.4 Multi-Head Attention
+### 8.3 Multi-Head Attention
 
 LLaMA usa **32 cabezas de atención** (en el modelo 3B).
 
@@ -272,7 +245,7 @@ Cada cabeza captura diferentes relaciones:
 - Otra conecta "me chocó" con responsabilidad
 - Otra conecta "ayer" con contexto temporal
 
-### 9.5 Self-Attention vs Cross-Attention
+### 8.4 Self-Attention vs Cross-Attention
 
 **LLaMA usa solo Self-Attention** (decoder-only):
 - Cada token atiende a tokens previos y a sí mismo
@@ -286,7 +259,7 @@ El texto de entrada y la generación del JSON ocurren en la misma secuencia:
                     Self-attention mira todo lo anterior
 ```
 
-### 9.6 Masking y Dropout
+### 8.5 Masking y Dropout
 
 **Causal Masking en LLaMA:**
 ```
@@ -305,7 +278,7 @@ Esto es crucial para generación: el modelo predice el siguiente token sin "hace
 
 ---
 
-## 10. Diagrama de Flujo Completo
+## 9. Diagrama de Flujo Completo
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -339,7 +312,7 @@ Esto es crucial para generación: el modelo predice el siguiente token sin "hace
 │  │  │  Feed-Forward Network                       │    │    │
 │  │  │  Procesa representaciones enriquecidas      │    │    │
 │  │  └─────────────────────────────────────────────┘    │    │
-│  │            (× 32 capas)                             │    │
+│  │                  (× 32 capas)                       │    │
 │  └─────────────────────────────────────────────────────┘    │
 │                           ↓                                 │
 │  ┌─────────────────────────────────────────────────────┐    │
@@ -356,7 +329,7 @@ Esto es crucial para generación: el modelo predice el siguiente token sin "hace
 
 ---
 
-## 11. Resumen: Conceptos Teóricos Aplicados
+## 10. Resumen: Conceptos Teóricos Aplicados
 
 | Concepto teórico | Cómo se aplica en el proyecto |
 |------------------|-------------------------------|
@@ -374,7 +347,7 @@ Esto es crucial para generación: el modelo predice el siguiente token sin "hace
 
 ---
 
-## 12. Posibles Preguntas de Defensa
+## 11. Posibles Preguntas de Defensa
 
 ### Pregunta 1: ¿Por qué no usar expresiones regulares?
 **Respuesta:** Las regex son deterministas y requieren patrones exactos. No pueden manejar:
@@ -396,4 +369,3 @@ Esto es crucial para generación: el modelo predice el siguiente token sin "hace
 
 ### Pregunta 5: ¿Qué es el fuzzing y por qué lo usaste?
 **Respuesta:** Fuzzing es una técnica de testing que genera datos con "ruido" intencional. Lo usé para simular la variabilidad del mundo real: errores de tipeo, falta de puntuación, jerga. Esto demuestra la robustez del modelo ante inputs imperfectos.
-****
