@@ -82,12 +82,12 @@ def is_vehicle_match(gt_val, ext_val):
     if gt_norm == ext_norm and gt_norm:
         return True
 
-    # Umbral de solapamiento de tokens
+    # Umbral de solapamiento de tokens (Comparten el 60% de las palabras?)
     overlap = token_overlap_ratio(gt_val, ext_val)
     if overlap >= 0.6:
         return True
 
-    # Fallback a similitud de secuencia
+    # Fallback a similitud de secuencia (Son al menos 70% similares caracter a caracter?)
     seq = similarity_ratio(str(gt_val).lower() if gt_val else "", str(ext_val).lower() if ext_val else "")
     if seq >= 0.7:
         return True
